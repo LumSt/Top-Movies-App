@@ -14,6 +14,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     
     @IBOutlet weak var MovieCollectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var switchButton: UIBarButtonItem!
     
     var movies:[NSDictionary]?
     
@@ -38,7 +39,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         MovieCollectionView.delegate = self
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
+        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(apiKey)")
         let request = URLRequest(url: url!, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
@@ -58,8 +59,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
             }
         }
         
-        
-        
+                
         task.resume()
     }
 
@@ -119,6 +119,11 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         })
         
         }
+        
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.red
+        cell.selectedBackgroundView = backgroundView
+        
         print(title)
         
         return cell
@@ -127,7 +132,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     func refreshControlAction(refreshControl: UIRefreshControl) {
         // ... Create the NSURLRequest (myRequest) ...
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")!
+        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(apiKey)")!
         let myRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         
         // Configure session so that completion handler is executed on main UI thread
@@ -177,15 +182,25 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         searchBar.resignFirstResponder()
     }
     
+    func switchButtonTapped () {
+        
+        
+    }
+    
     // MARK: - Navigation
-
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let cell = sender as! UICollectionViewCell
-        let indexPath = MovieCollectionView.indexPath(for: cell)
-        let movie = movies?[(indexPath?.row)!]
-        let detaiViewController = segue.destination as! DetailViewController
-        detaiViewController.movies = movie
+        if let cell = sender as? UICollectionViewCell {
+            let indexPath = MovieCollectionView.indexPath(for: cell)
+            let movie = movies?[(indexPath?.row)!]
+            let detaiViewController = segue.destination as! DetailViewController
+            detaiViewController.movies = movie
+        } else {
+            let alterView = segue.destination as! MoviesViewController
+            alterView.movies = self.movies
+            alterView.endpoint = self.endpoint
+        }
+        
         
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
