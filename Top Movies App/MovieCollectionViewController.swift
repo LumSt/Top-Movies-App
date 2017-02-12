@@ -15,6 +15,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     @IBOutlet weak var MovieCollectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var switchButton: UIBarButtonItem!
+    @IBOutlet weak var errorView: UIView!
     
     var movies:[NSDictionary]?
     
@@ -56,6 +57,12 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
                     
                     MBProgressHUD.hide(for: self.view, animated: true)
                 }
+            } else {
+                self.errorView.isHidden = false
+                self.MovieCollectionView.isHidden = true
+                MBProgressHUD.hide(for: self.view, animated: true)
+
+                self.MovieCollectionView.reloadData()
             }
         }
         
@@ -94,8 +101,8 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
             let imageUrl = NSURL(string: baseUrl + posterPath)
             cell.posterCollectionView.setImageWith(imageUrl as! URL)
         
-            let imageRequest = NSURLRequest(url: imageUrl as! URL)
-        
+            let imageRequest = NSURLRequest(url: imageUrl as! URL) 
+            
             cell.posterCollectionView.setImageWith(
                 imageRequest as URLRequest,
                 placeholderImage: nil,
